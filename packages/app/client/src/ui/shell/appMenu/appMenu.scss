@@ -18,3 +18,29 @@
     line-height: 30px;
   }
 }
+
+.menu {
+  position: absolute;
+  display: flex;
+  flex-flow: column nowrap;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+
+  // also for testing
+  width: 100px;
+  border: 1px solid black;
+  background-color: slategray;
+  color: white;
+
+  // for testing
+  top: 0;
+  left: 100px;
+}
+
+.menu-item {
+  position: relative;
+  height: 20px;
+  width: 100px;
+  line-height: 20px;
+}
