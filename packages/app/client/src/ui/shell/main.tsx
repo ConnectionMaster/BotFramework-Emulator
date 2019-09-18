@@ -46,6 +46,7 @@ import * as styles from './main.scss';
 import { MDI } from './mdi';
 import { NavBar } from './navBar';
 import { StatusBar } from './statusBar/statusBar';
+import { AppMenu } from './appMenu/appMenu';
 
 export interface MainProps {
   applicationMountComplete?: () => void;
@@ -115,28 +116,31 @@ export class Main extends React.Component<MainProps, MainState> {
     );
 
     return (
-      <div className={styles.main}>
-        <div className={styles.nav}>
-          {!this.props.presentationModeEnabled && (
-            <NavBar selection={this.props.navBarSelection} explorerIsVisible={this.props.explorerIsVisible} />
-          )}
-          <main className={styles.workbench}>
-            <Splitter
-              orientation={'vertical'}
-              primaryPaneIndex={0}
-              minSizes={{ 0: 175, 1: 40 }}
-              initialSizes={{ 0: 280 }}
-              onSizeChange={this.checkExplorerSize}
-            >
-              {workbenchChildren}
-            </Splitter>
-          </main>
-          <TabManagerContainer disabled={false} />
+      <>
+        <AppMenu />
+        <div className={styles.main}>
+          <div className={styles.nav}>
+            {!this.props.presentationModeEnabled && (
+              <NavBar selection={this.props.navBarSelection} explorerIsVisible={this.props.explorerIsVisible} />
+            )}
+            <main className={styles.workbench}>
+              <Splitter
+                orientation={'vertical'}
+                primaryPaneIndex={0}
+                minSizes={{ 0: 175, 1: 40 }}
+                initialSizes={{ 0: 280 }}
+                onSizeChange={this.checkExplorerSize}
+              >
+                {workbenchChildren}
+              </Splitter>
+            </main>
+            <TabManagerContainer disabled={false} />
+          </div>
+          {!this.props.presentationModeEnabled && <StatusBar />}
+          <DialogHostContainer />
+          <StoreVisualizer enabled={false} />
         </div>
-        {!this.props.presentationModeEnabled && <StatusBar />}
-        <DialogHostContainer />
-        <StoreVisualizer enabled={false} />
-      </div>
+      </>
     );
   }
 

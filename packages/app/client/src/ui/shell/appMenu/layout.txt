@@ -1,0 +1,60 @@
+Menu Layout (WINDOWS):
+
+File
+ - New Bot Configuration...
+ == sep ==
+ - Open Bot
+ - Open Recent
+   - [recent bots]
+ == sep ==
+ - Open Transcript
+ == sep ==
+ - Close tab
+ == sep ==
+ - Sign in with Azure
+ - Clear State
+ == sep ==
+ - Themes
+   - [themes]
+ == sep ==
+ - Copy Emulator service URL
+ == sep ==
+ - Exit
+
+Debug
+ - Start Debugging
+
+Edit
+ - Undo (Ctrl + Z)
+ - Redo (Ctrl + Y)
+ == sep ==
+ - Cut (Ctrl + X)
+ - Copy (Ctrl + C)
+ - Paste (Ctrl + V)
+ - Delete
+
+View
+ - Reset Zoom (Ctrl + 0)
+ - Zoom In (Ctrl + Shift + =)
+ - Zoom Out (Ctrl + -)
+ == sep ==
+ - Toggle Full Screen (F11)
+ - Toggle Developer Tools (Ctrl + Shift + I)
+
+Conversation
+ - Send System Activity
+   - [activities]
+
+Help
+ - Welcome
+ == sep ==
+ - Privacy
+ - License
+ - Credits
+ == sep ==
+ - Report an issue
+ == sep ==
+ - Check for update...
+ == sep ==
+ - Get started with channels (Bot Inspector)
+ - About
