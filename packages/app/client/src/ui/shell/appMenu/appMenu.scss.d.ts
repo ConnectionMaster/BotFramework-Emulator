@@ -2,3 +2,5 @@
 export const appMenu: string;
 export const menu: string;
 export const menuItem: string;
+export const menuSeparator: string;
+export const submenuCaret: string;

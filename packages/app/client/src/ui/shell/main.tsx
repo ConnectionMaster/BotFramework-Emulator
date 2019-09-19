@@ -33,6 +33,7 @@
 
 import { Splitter } from '@bfemulator/ui-react';
 import * as React from 'react';
+import { remote } from 'electron';
 
 import * as Constants from '../../constants';
 import { Editor } from '../../state/reducers/editor';
@@ -81,6 +82,9 @@ export class Main extends React.Component<MainProps, MainState> {
 
   public componentDidMount() {
     this.props.applicationMountComplete();
+    if (!remote.getCurrentWebContents().isDevToolsOpened) {
+      remote.getCurrentWebContents().toggleDevTools();
+    }
   }
 
   public render() {

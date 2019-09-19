@@ -32,89 +32,155 @@
 //
 
 import * as React from 'react';
+import * as ReactDOM from 'react-dom';
 
 import * as styles from './appMenu.scss';
 
-type MenuItemType = 'default' | 'checkbox' | 'submenu' | 'separator';
+type MenuItemType = 'default' | 'toggle' | 'submenu' | 'separator';
 interface MenuItem {
   disabled?: boolean;
   items?: MenuItem[];
   label?: string;
-  type: MenuItemType;
+  onClick?: () => void;
+  type?: MenuItemType;
 }
 
 const fileMenu: MenuItem[] = [
-  { type: 'default', label: 'New bot config...' },
+  { label: 'New bot config...' },
+  { type: 'separator' },
+  { label: 'Open bot' },
+  {
+    label: 'Open recent',
+    type: 'submenu',
+    items: [{ label: 'bot1' }, { label: 'bot2' }, { label: 'bot3' }, { label: 'bot4' }, { label: 'bot5' }],
+  },
+  { type: 'separator' },
+  { label: 'Open Transcript' },
+  { type: 'separator' },
+  { label: 'Close tab' },
+  { type: 'separator' },
+  { label: 'Sign in with Azure' },
+  { label: 'Clear state' },
   { type: 'separator' },
   {
     label: 'Themes',
     type: 'submenu',
-    items: [{ type: 'default', label: 'Light' }, { type: 'default', label: 'Dark' }],
+    items: [
+      { label: 'Light', onClick: () => console.log('Selected light theme') },
+      { label: 'Dark' },
+      { label: 'High contrast' },
+    ],
   },
+  { type: 'separator' },
+  { label: 'Copy Emulator service URL' },
+  { type: 'separator' },
+  { label: 'Exit' },
 ];
 
 export interface AppMenuProps {}
 
-export interface AppMenuState {}
+export interface AppMenuState {
+  showingFileMenu: boolean;
+}
 
 export class AppMenu extends React.Component<AppMenuProps, AppMenuState> {
+  private fileItemRef: HTMLLIElement;
+
+  constructor(props: AppMenuProps) {
+    super(props);
+    this.state = {
+      showingFileMenu: false,
+    };
+  }
+
   public render(): React.ReactNode {
+    const { showingFileMenu } = this.state;
+
     return (
       <>
         <ul className={styles.appMenu}>
-          <li>File</li>
+          <li ref={this.setFileItemRef} onClick={this.onClickFileMenu.bind(this)}>
+            File
+          </li>
           <li>Debug</li>
           <li>Edit</li>
           <li>View</li>
           <li>Conversation</li>
           <li>Help</li>
         </ul>
-        <Menu items={fileMenu}></Menu>
+        <Menu anchorRef={this.fileItemRef} items={fileMenu} topLevel={true} showing={showingFileMenu}></Menu>
       </>
     );
   }
+
+  private setFileItemRef = (ref: HTMLLIElement): void => {
+    this.fileItemRef = ref;
+  };
+
+  private onClickFileMenu = (_event: React.MouseEvent<HTMLLIElement>): void => {
+    this.setState({ showingFileMenu: !this.state.showingFileMenu });
+  };
 }
 
+export interface MenuAnchorPoints {
+  top?: string;
+  left?: string;
+  bottom?: string;
+  right?: string;
+}
 export interface MenuProps {
+  anchorRef?: HTMLElement;
   items: MenuItem[];
   showing?: boolean;
+  topLevel?: boolean;
 }
-export interface MenuState {
-  showing: boolean;
-}
-export class Menu extends React.Component<MenuProps, MenuState> {
-  constructor(props: MenuProps) {
-    super(props);
-    this.state = {
-      showing: true,
-    };
-  }
-
+/** Menu that can be top-level, or spawned by a SubMenu */
+export class Menu extends React.Component<MenuProps, {}> {
   public render(): React.ReactNode {
-    const { items = [] } = this.props;
+    const { anchorRef, items = [], topLevel } = this.props;
 
-    if (!this.state.showing) {
+    if (!this.props.showing) {
       return null;
     }
 
-    return (
-      <ul className={styles.menu}>
+    const menuPosition = anchorRef ? this.getMenuPosition() : undefined;
+    const menuContent = (
+      <ul className={styles.menu} style={menuPosition}>
         {items.map(item => {
-          if (item.type === 'default') {
-            return <MenuItem>{item.label}</MenuItem>;
-          } else if (item.type === 'separator') {
-            return <MenuItem>======</MenuItem>;
-          } else if (item.type === 'submenu') {
+          if (item.type === 'submenu') {
             return <SubMenu items={item.items} label={item.label}></SubMenu>;
+          } else {
+            return <MenuItemComp {...item} />;
           }
         })}
       </ul>
     );
+
+    if (topLevel) {
+      return ReactDOM.createPortal(menuContent, document.body);
+    } else {
+      return menuContent;
+    }
+  }
+
+  private getMenuPosition() {
+    const domRect = this.props.anchorRef.getBoundingClientRect();
+    const top = domRect.bottom;
+    const left = domRect.left;
+    return { top, left };
   }
 }
 
-export class SubMenu extends React.Component<MenuProps & { label: string }, MenuState> {
-  constructor(props: any) {
+export interface SubMenuProps {
+  items: MenuItem[];
+  label: string;
+}
+export interface SubMenuState {
+  showing: boolean;
+}
+/** Represents a menu item that also opens a menu when hovered over */
+export class SubMenu extends React.Component<SubMenuProps, SubMenuState> {
+  constructor(props: SubMenuProps) {
     super(props);
     this.state = {
       showing: false,
@@ -125,6 +191,9 @@ export class SubMenu extends React.Component<MenuProps & { label: string }, Menu
     return (
       <li className={styles.menuItem} onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}>
         {this.props.label}
+        <span className={styles.submenuCaret} role="presentation">
+          &gt;
+        </span>
         {this.state.showing && <Menu showing={this.state.showing} items={this.props.items}></Menu>}
       </li>
     );
@@ -139,4 +208,23 @@ export class SubMenu extends React.Component<MenuProps & { label: string }, Menu
   };
 }
 
-export const MenuItem = props => <li>{props.children}</li>;
+/** Just a basic menu item (Checkbox / Separator / Default) */
+export class MenuItemComp extends React.Component<MenuItem, {}> {
+  public render(): React.ReactNode {
+    const { label, onClick, type = 'default' } = this.props;
+
+    switch (type) {
+      case 'separator':
+        return <li className={styles.menuSeparator}></li>;
+
+      // TODO: define checkbox
+      case 'toggle':
+      default:
+        return (
+          <li className={styles.menuItem} onClick={onClick}>
+            {label}
+          </li>
+        );
+    }
+  }
+}

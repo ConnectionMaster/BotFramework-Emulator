@@ -71,6 +71,12 @@ export class AppMenuBuilder {
 
   /** Called on app startup */
   public static async initAppMenu(): Promise<void> {
+    // show an HTML app menu on Windows (a11y)
+    if (process.platform === 'win32') {
+      Menu.setApplicationMenu(null);
+      return;
+    }
+
     const template: MenuOpts[] = [
       await this.initFileMenu(),
       this.initDebugMenu(),
