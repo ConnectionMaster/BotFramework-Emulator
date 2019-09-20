@@ -72,6 +72,7 @@ class ActivityWrapper extends Component<ActivityWrapperProps> {
     return (
       <div
         {...divProps}
+        aria-current={isSelected}
         className={classes}
         onClick={this.setSelectedActivity}
         onKeyDown={this.onKeyDown}

@@ -1,24 +1,39 @@
 .app-menu {
+  box-sizing: border-box;
   display: flex;
   flex-flow: row nowrap;
   height: 30px;
   width: 100%;
-  padding: 0;
+  padding: 1px;
   margin: 0;
   list-style: none;
+  background-color: #F4F4F4;
 
   > * {
     flex-shrink: 0;
   }
 
   > li {
-    height: 30px;
-    padding: 0 8px;
-    font-size: 13px;
-    line-height: 30px;
+    box-sizing: border-box;
+
+    > button {
+      box-sizing: border-box;
+      height: 28px;
+      padding: 1px 8px;
+      border: 0;
+      background: 0;
+      font-size: 13px;
+      line-height: 28px;
+
+      &:hover,
+      &:focus {
+        background-color: #E8E8E8;
+      }
+    }
   }
 }
 
+// widget
 .menu {
   box-sizing: border-box;
   position: absolute;
@@ -31,8 +46,8 @@
   list-style: none;
 
   // also for testing
-  color: #2b2b2b;
-  background-color: #f4f4f4;
+  color: #2B2B2B;
+  background-color: #F4F4F4;
 
   // testing
   top: -8px; // accounts for top padding on menu to align submenu items
@@ -59,7 +74,7 @@
 .menu-separator {
   margin: 4px 8px;
   height: 1px;
-  background-color: #2b2b2b;
+  background-color: #2B2B2B;
   opacity: 0.2;
 }
 
