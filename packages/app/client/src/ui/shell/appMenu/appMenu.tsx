@@ -35,9 +35,10 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
 import * as styles from './appMenu.scss';
+import { appMenuTemplate } from './appMenuTemplate';
 
 type MenuItemType = 'default' | 'toggle' | 'submenu' | 'separator';
-interface MenuItem {
+export interface MenuItem {
   disabled?: boolean;
   items?: MenuItem[];
   label?: string;
@@ -45,80 +46,69 @@ interface MenuItem {
   type?: MenuItemType;
 }
 
-const fileMenu: MenuItem[] = [
-  { label: 'New bot config...' },
-  { type: 'separator' },
-  { label: 'Open bot' },
-  {
-    label: 'Open recent',
-    type: 'submenu',
-    items: [{ label: 'bot1' }, { label: 'bot2' }, { label: 'bot3' }, { label: 'bot4' }, { label: 'bot5' }],
-  },
-  { type: 'separator' },
-  { label: 'Open Transcript' },
-  { type: 'separator' },
-  { label: 'Close tab' },
-  { type: 'separator' },
-  { label: 'Sign in with Azure' },
-  { label: 'Clear state' },
-  { type: 'separator' },
-  {
-    label: 'Themes',
-    type: 'submenu',
-    items: [
-      { label: 'Light', onClick: () => console.log('Selected light theme') },
-      { label: 'Dark' },
-      { label: 'High contrast' },
-    ],
-  },
-  { type: 'separator' },
-  { label: 'Copy Emulator service URL' },
-  { type: 'separator' },
-  { label: 'Exit' },
-];
-
 export interface AppMenuProps {}
 
 export interface AppMenuState {
-  showingFileMenu: boolean;
+  menuItemsShowing: { [menuItem: string]: boolean };
 }
 
 export class AppMenu extends React.Component<AppMenuProps, AppMenuState> {
-  private fileItemRef: HTMLLIElement;
+  private menuItemRefs: { [menuItem: string]: HTMLLIElement };
+  private initialMenuState = {
+    file: false,
+    debug: false,
+    edit: false,
+    view: false,
+    conversation: false,
+    help: false,
+  };
 
   constructor(props: AppMenuProps) {
     super(props);
     this.state = {
-      showingFileMenu: false,
+      menuItemsShowing: { ...this.initialMenuState },
     };
+    this.menuItemRefs = {};
   }
 
   public render(): React.ReactNode {
-    const { showingFileMenu } = this.state;
+    const { onClickMenuItem, setMenuItemRef } = this;
+    const { menuItemsShowing } = this.state;
 
     return (
       <>
         <ul className={styles.appMenu}>
-          <li ref={this.setFileItemRef} onClick={this.onClickFileMenu.bind(this)}>
-            File
-          </li>
-          <li>Debug</li>
-          <li>Edit</li>
-          <li>View</li>
-          <li>Conversation</li>
-          <li>Help</li>
+          {['File', 'Debug', 'Edit', 'View', 'Conversation', 'Help'].map(menuItem => {
+            const menuItemKey = menuItem.toLowerCase();
+            return (
+              <li key={menuItemKey} ref={setMenuItemRef(menuItemKey)} onClick={onClickMenuItem(menuItemKey)}>
+                {menuItem}
+              </li>
+            );
+          })}
         </ul>
-        <Menu anchorRef={this.fileItemRef} items={fileMenu} topLevel={true} showing={showingFileMenu}></Menu>
+        {Object.keys(appMenuTemplate).map(menuItem => {
+          return (
+            <Menu
+              anchorRef={this.menuItemRefs[menuItem]}
+              items={appMenuTemplate[menuItem]}
+              topLevel={true}
+              showing={menuItemsShowing[menuItem]}
+            />
+          );
+        })}
       </>
     );
   }
 
-  private setFileItemRef = (ref: HTMLLIElement): void => {
-    this.fileItemRef = ref;
+  private setMenuItemRef = (menuItem: string) => (ref: HTMLLIElement): void => {
+    this.menuItemRefs[menuItem] = ref;
   };
 
-  private onClickFileMenu = (_event: React.MouseEvent<HTMLLIElement>): void => {
-    this.setState({ showingFileMenu: !this.state.showingFileMenu });
+  private onClickMenuItem = (menuItem: string) => (_event: React.MouseEvent<HTMLLIElement>): void => {
+    this.setState({
+      menuItemsShowing: { ...this.initialMenuState, [menuItem]: !this.state.menuItemsShowing[menuItem] },
+    });
   };
 }
 
