@@ -41,9 +41,11 @@ class EventHandlers {
   public static async globalHandles(event: KeyboardEvent): Promise<any> {
     // Meta corresponds to 'Command' on Mac
     const ctrlOrCmdPressed = event.ctrlKey || event.metaKey;
+    const shiftPressed = event.shiftKey;
     const key = event.key.toLowerCase();
     const {
       Commands: {
+        Electron: { ToggleDevTools },
         UI: { ShowBotCreationDialog, ShowOpenBotDialog },
         Notifications: { Add },
       },
@@ -56,6 +58,10 @@ class EventHandlers {
 
     if (ctrlOrCmdPressed && key === 'n') {
       awaitable = EventHandlers.commandService.call(ShowBotCreationDialog);
+    }
+
+    if (ctrlOrCmdPressed && shiftPressed && key === 'i') {
+      awaitable = EventHandlers.commandService.remoteCall(ToggleDevTools);
     }
 
     if (awaitable) {

@@ -214,4 +214,11 @@ export class ElectronCommands {
     }
     return fs.rename(existingPath, fullPath); // let any errors propagate up the stack
   }
+
+  // ---------------------------------------------------------------------------
+  // Toggles Chrome dev tools
+  @Command(Commands.ToggleDevTools)
+  protected toggleDevTools(): void {
+    emulatorApplication.mainWindow.webContents.toggleDevTools();
+  }
 }
