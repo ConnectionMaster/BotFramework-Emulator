@@ -33,30 +33,59 @@
 
 import * as React from 'react';
 
-import * as styles from './appMenu.scss';
-import { appMenuTemplate } from './appMenuTemplate';
-import { MenuButton } from './menu/menuButton';
+import * as styles from '../appMenu.scss';
 
-export class AppMenu extends React.Component<{}, {}> {
+type MenuItemType = 'default' | 'toggle' | 'submenu' | 'separator';
+
+export interface MenuItem {
+  disabled?: boolean;
+  items?: MenuItem[];
+  label?: string;
+  onClick?: () => void;
+  type?: MenuItemType;
+}
+
+export interface MenuItemProps extends MenuItem {
+  focusHandler: (index: number) => (ref: HTMLLIElement) => void;
+  index: number;
+}
+
+/** Just a basic menu item (Checkbox / Separator / Default) */
+export class MenuItemComp extends React.Component<MenuItemProps, {}> {
   public render(): React.ReactNode {
-    return (
-      <ul className={styles.appMenu}>
-        {['File', 'Debug', 'Edit', 'View', 'Conversation', 'Help'].map(menuItem => {
-          const menuItemKey = menuItem.toLowerCase();
+    const { focusHandler, index, label, onClick, type = 'default' } = this.props;
 
-          return (
-            <li key={menuItemKey}>
-              <MenuButton
-                className={styles.appMenuItem}
-                id={`app-menu-${menuItemKey}-btn`}
-                items={appMenuTemplate[menuItemKey]}
-              >
-                {menuItem}
-              </MenuButton>
-            </li>
-          );
-        })}
-      </ul>
-    );
+    switch (type) {
+      case 'separator':
+        return <li className={styles.menuSeparator}></li>;
+
+      // TODO: define checkbox
+      case 'toggle':
+      default:
+        return (
+          <li
+            className={styles.menuItem}
+            onClick={onClick}
+            onKeyDown={this.onKeyDown}
+            ref={focusHandler(index)}
+            role="menuitem"
+            tabIndex={-1}
+          >
+            {label}
+          </li>
+        );
+    }
   }
+
+  private onKeyDown = (event: React.KeyboardEvent<HTMLLIElement>): void => {
+    let { key } = event;
+    key = key.toLowerCase();
+
+    if (key === 'enter') {
+      event.preventDefault();
+      event.stopPropagation();
+      this.props.onClick && this.props.onClick();
+      document.body.dispatchEvent(new Event('MenuItemSelected'));
+    }
+  };
 }

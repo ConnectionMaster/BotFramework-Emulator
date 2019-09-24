@@ -31,7 +31,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import { MenuItem } from './appMenu';
+import { MenuItem } from './menu/menuItem';
 
 export const appMenuTemplate: { [key: string]: MenuItem[] } = {
   file: [
