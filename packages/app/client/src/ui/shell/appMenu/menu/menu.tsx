@@ -39,9 +39,13 @@ import * as styles from '../appMenu.scss';
 import { MenuItem, MenuItemComp } from './menuItem';
 import { SubMenu } from './subMenu';
 
+export type MenuOrientation = 'below' | 'toRight';
+
 export interface MenuProps {
   anchorRef?: HTMLElement;
+  ariaLabelledBy?: string;
   items: MenuItem[];
+  orientation?: MenuOrientation;
   setMenuShowing: (showing: boolean) => void;
   showing?: boolean;
   topLevel?: boolean;
@@ -51,17 +55,19 @@ export interface MenuState {
   focusedIndex: number;
 }
 
+// TODO: Issue with splitter slider pointer collision???
+
 /** Menu that can be top-level, or spawned by a SubMenu */
 export class Menu extends React.Component<MenuProps, MenuState> {
   constructor(props: MenuProps) {
     super(props);
     this.state = {
-      focusedIndex: 0,
+      focusedIndex: 0, // TODO: might need to focus first non-disabled item
     };
   }
 
   public render(): React.ReactNode {
-    const { items = [], showing, topLevel } = this.props;
+    const { ariaLabelledBy = '', items = [], showing, topLevel } = this.props;
 
     if (!showing) {
       return null;
@@ -69,7 +75,7 @@ export class Menu extends React.Component<MenuProps, MenuState> {
 
     const menuContent = (
       <ul
-        aria-labelledby={this.menuButtonId}
+        aria-labelledby={ariaLabelledBy}
         className={styles.menu}
         role="menu"
         style={this.menuPosition}
@@ -100,22 +106,20 @@ export class Menu extends React.Component<MenuProps, MenuState> {
   }
 
   private get menuPosition() {
-    const { anchorRef } = this.props;
+    const { anchorRef, orientation = 'below' } = this.props;
     if (anchorRef) {
       const domRect = anchorRef.getBoundingClientRect();
-      const top = domRect.bottom;
-      const left = domRect.left;
-      return { top, left };
+      if (orientation === 'below') {
+        const top = domRect.bottom;
+        const left = domRect.left;
+        return { top, left };
+      } else {
+        const top = domRect.top + 8;
+        const left = domRect.right;
+        return { top, left };
+      }
     }
     return undefined;
-  }
-
-  private get menuButtonId(): string {
-    const { anchorRef } = this.props;
-    if (anchorRef) {
-      return anchorRef.getAttribute('id');
-    }
-    return '';
   }
 
   private focusPreviousItem(): void {

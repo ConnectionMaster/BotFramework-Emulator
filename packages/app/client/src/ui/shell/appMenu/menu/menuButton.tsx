@@ -33,7 +33,7 @@
 
 import * as React from 'react';
 
-import { Menu } from './menu';
+import { Menu, MenuOrientation } from './menu';
 import { MenuItem } from './menuItem';
 
 export interface MenuButtonProps {
@@ -41,6 +41,7 @@ export interface MenuButtonProps {
   id?: string;
   items: MenuItem[];
   key?: string;
+  orientation?: MenuOrientation;
 }
 
 export interface MenuButtonState {
@@ -48,29 +49,46 @@ export interface MenuButtonState {
 }
 
 export class MenuButton extends React.Component<MenuButtonProps, MenuButtonState> {
+  private static _id: number;
   private buttonRef: HTMLButtonElement;
+  private menuButtonId: string;
+  private onBodyClickListener: () => void;
   private onMenuItemSelectedListener: () => void;
+  private onMenuButtonExpandedListener: () => void;
 
   constructor(props: MenuButtonProps) {
     super(props);
-
     this.state = {
       menuShowing: false,
     };
+    this.menuButtonId = MenuButton.id;
+  }
+
+  public static get id(): string {
+    if (!this._id) {
+      this._id = 0;
+    }
+    return `menu-btn-${this._id++}`;
   }
 
   public componentDidMount(): void {
+    this.onBodyClickListener = this.onBodyClick.bind(this);
     this.onMenuItemSelectedListener = this.onMenuItemSelected.bind(this);
+    this.onMenuButtonExpandedListener = this.onMenuButtonExpanded.bind(this);
+    document.body.addEventListener('click', this.onBodyClickListener);
     document.body.addEventListener('MenuItemSelected', this.onMenuItemSelectedListener);
+    document.body.addEventListener('MenuButtonExpanded', this.onMenuButtonExpandedListener);
   }
 
   public componentWillUnmount(): void {
+    document.body.removeEventListener('click', this.onBodyClickListener);
     document.body.removeEventListener('MenuItemSelected', this.onMenuItemSelectedListener);
+    document.body.removeEventListener('MenuButtonExpanded', this.onMenuButtonExpandedListener);
   }
 
   public render(): React.ReactNode {
     const { buttonRef, onButtonClick, setMenuShowing } = this;
-    const { className, id, items = [], key } = this.props;
+    const { className, id, items = [], key, orientation } = this.props;
     const { menuShowing } = this.state;
 
     return (
@@ -80,27 +98,30 @@ export class MenuButton extends React.Component<MenuButtonProps, MenuButtonState
           aria-expanded={menuShowing}
           className={className}
           key={key}
-          id={id}
+          id={id || this.menuButtonId}
           ref={this.setWrapperRef}
           onClick={onButtonClick}
         >
           {this.props.children}
         </button>
         <Menu
+          ariaLabelledBy={id || this.menuButtonId}
           anchorRef={buttonRef}
           items={items}
           key={key}
-          topLevel={true}
+          orientation={orientation}
           setMenuShowing={setMenuShowing}
           showing={menuShowing}
+          topLevel={true}
         />
       </>
     );
   }
 
-  private onButtonClick = (event: React.MouseEvent<HTMLButtonElement>): void => {
-    // TODO: necessary?
-    event.stopPropagation();
+  private onButtonClick = (_event: React.MouseEvent<HTMLButtonElement>): void => {
+    if (!this.state.menuShowing) {
+      document.body.dispatchEvent(new CustomEvent('MenuButtonExpanded', { detail: this.menuButtonId }));
+    }
     this.setMenuShowing(!this.state.menuShowing);
   };
 
@@ -118,6 +139,23 @@ export class MenuButton extends React.Component<MenuButtonProps, MenuButtonState
   private onMenuItemSelected(): void {
     if (this.state.menuShowing) {
       this.setMenuShowing(false);
+    }
+  }
+
+  private onMenuButtonExpanded(event: CustomEvent): void {
+    if (this.menuButtonId !== event.detail) {
+      // this is not the menu that was opened, so close it if it's open
+      this.state.menuShowing && this.setState({ menuShowing: false });
+    }
+  }
+
+  private onBodyClick(event: React.MouseEvent<HTMLBodyElement>): void {
+    const { id } = this.props;
+    const target = event.target as HTMLElement;
+    const idSelector = id ? `button#${id}` : `button#${this.menuButtonId}`;
+    if (!target.closest(idSelector)) {
+      // the click was outside of the menu
+      this.setState({ menuShowing: false });
     }
   }
 }

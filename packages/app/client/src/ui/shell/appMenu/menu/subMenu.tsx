@@ -51,32 +51,51 @@ export interface SubMenuState {
 
 /** Represents a menu item that also opens a menu when hovered over */
 export class SubMenu extends React.Component<SubMenuProps, SubMenuState> {
+  private static _id: number;
+  private subMenuButtonId: string;
+
   constructor(props: SubMenuProps) {
     super(props);
     this.state = {
       menuShowing: false,
     };
+    this.subMenuButtonId = SubMenu.id;
+  }
+
+  public static get id(): string {
+    if (!this._id) {
+      this._id = 0;
+    }
+    return `sub-menu-btn-${this._id++}`;
   }
 
   public render(): React.ReactNode {
+    const { focusHandler, index, items, label = '' } = this.props;
+    const { menuShowing } = this.state;
     // if the submenu is showing, temporarily disable focus management in parent menu
-    const focusHandler = this.state.menuShowing ? undefined : this.props.focusHandler(this.props.index);
+    const ref = menuShowing ? undefined : focusHandler(index);
 
     return (
       <li
+        aria-haspopup={true}
+        aria-expanded={menuShowing}
         className={styles.menuItem}
+        id={this.subMenuButtonId}
         onKeyDown={this.onKeyDown}
         onMouseEnter={this.onMouseEnter}
         onMouseLeave={this.onMouseLeave}
-        ref={focusHandler}
+        ref={ref}
         role="menuitem"
         tabIndex={-1}
       >
-        {this.props.label}
-        <span className={styles.submenuCaret} role="presentation">
-          &gt;
-        </span>
-        <Menu setMenuShowing={this.setMenuShowing} showing={this.state.menuShowing} items={this.props.items}></Menu>
+        {label}
+        <span className={styles.submenuCaret} role="presentation" />
+        <Menu
+          ariaLabelledBy={this.subMenuButtonId}
+          items={items}
+          setMenuShowing={this.setMenuShowing}
+          showing={this.state.menuShowing}
+        ></Menu>
       </li>
     );
   }
@@ -88,8 +107,8 @@ export class SubMenu extends React.Component<SubMenuProps, SubMenuState> {
     switch (key) {
       case 'arrowright':
       case 'enter':
+        // TODO: might need to test doubly nested sub menus
         event.preventDefault();
-        event.stopPropagation();
         this.setMenuShowing(true);
         break;
 

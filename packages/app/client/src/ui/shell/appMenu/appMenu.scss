@@ -78,7 +78,17 @@
   opacity: 0.2;
 }
 
+// TODO: test caret with long menu item labels
 .submenu-caret {
+  box-sizing: border-box;
   position: absolute;
-  right: 8px;
+  padding: 2px 0;
+  height: 12px;
+  width: 12px;
+  right: 4px;
+  top: 4px;
+  background-color: #2B2B2B;
+  -webkit-mask: url('../../media/ic_chevron_down.svg') no-repeat;
+  -webkit-mask-size: 12px;
+  transform: rotate(-90deg);
 }

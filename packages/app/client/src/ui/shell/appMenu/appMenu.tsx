@@ -46,11 +46,7 @@ export class AppMenu extends React.Component<{}, {}> {
 
           return (
             <li key={menuItemKey}>
-              <MenuButton
-                className={styles.appMenuItem}
-                id={`app-menu-${menuItemKey}-btn`}
-                items={appMenuTemplate[menuItemKey]}
-              >
+              <MenuButton className={styles.appMenuItem} items={appMenuTemplate[menuItemKey]}>
                 {menuItem}
               </MenuButton>
             </li>
