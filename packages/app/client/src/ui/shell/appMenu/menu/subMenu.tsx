@@ -107,15 +107,18 @@ export class SubMenu extends React.Component<SubMenuProps, SubMenuState> {
     switch (key) {
       case 'arrowright':
       case 'enter':
-        // TODO: might need to test doubly nested sub menus
+        // TODO: Would be nice to avoid using stopPropagation()
+        event.stopPropagation();
         event.preventDefault();
         this.setMenuShowing(true);
         break;
 
       case 'arrowleft':
       case 'escape':
-        event.preventDefault();
-        this.setMenuShowing(false);
+        if (this.state.menuShowing) {
+          event.stopPropagation();
+          this.setMenuShowing(false);
+        }
         break;
 
       default:

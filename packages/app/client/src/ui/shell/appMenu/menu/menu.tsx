@@ -182,24 +182,24 @@ export class Menu extends React.Component<MenuProps, MenuState> {
     }
   };
 
-  private onKeyDown = (e: React.KeyboardEvent<HTMLUListElement>): void => {
-    let { key = '' } = e;
+  private onKeyDown = (event: React.KeyboardEvent<HTMLUListElement>): void => {
+    let { key = '' } = event;
     key = key.toLowerCase();
 
     switch (key) {
       case 'arrowdown':
-        e.stopPropagation();
+        event.stopPropagation();
         this.focusNextItem();
         break;
 
       case 'arrowup':
-        e.stopPropagation();
+        event.stopPropagation();
         this.focusPreviousItem();
         break;
 
       case 'escape':
         // don't want closing a submenu to close a top-level menu
-        e.stopPropagation();
+        event.stopPropagation();
         this.closeMenu();
         break;
 
@@ -207,17 +207,17 @@ export class Menu extends React.Component<MenuProps, MenuState> {
         // let selecting an option bubble up to parent menu
         if (this.props.topLevel) {
           // don't let the click bubble up to the button or the menu will reopen
-          e.preventDefault();
+          event.preventDefault();
         }
         this.closeMenu();
         break;
 
       case 'tab':
-        if (e.shiftKey) {
+        if (event.shiftKey) {
           // closeMenu() already re-focuses the caret button,
           // so we want to prevent the default behavior which
           // would shift focus to whatever is before the caret button
-          e.preventDefault();
+          event.preventDefault();
         }
         this.closeMenu();
         break;
