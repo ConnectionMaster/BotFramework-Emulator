@@ -55,7 +55,7 @@ export const appMenuTemplate: { [key: string]: MenuItem[] } = {
       label: 'Themes',
       type: 'submenu',
       items: [
-        { label: 'Light', onClick: () => console.log('Selected light theme') },
+        { checked: true, label: 'Light', onClick: () => console.log('Selected light theme') },
         { label: 'Dark' },
         { label: 'High contrast' },
       ],
@@ -99,7 +99,7 @@ export const appMenuTemplate: { [key: string]: MenuItem[] } = {
     { type: 'separator' },
     { label: 'Report an issue' },
     { type: 'separator' },
-    { label: 'Check for update...' },
+    { disabled: true, label: 'Check for update...' },
     { type: 'separator' },
     { label: 'Get started with channels (Bot Inspector)' },
     { label: 'About' },

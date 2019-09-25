@@ -69,6 +69,23 @@
   &:hover {
     background-color: aquamarine;
   }
+
+  &.disabled {
+    color: #8A8A8A;
+  }
+
+  > .menu-item-check {
+    box-sizing: border-box;
+    position: absolute;
+    padding: 2px 0;
+    height: 12px;
+    width: 12px;
+    left: 4px;
+    top: 4px;
+    background-color: #2B2B2B;
+    -webkit-mask: url('../../media/ic_check.svg') no-repeat;
+    -webkit-mask-size: 12px;
+  }
 }
 
 .menu-separator {

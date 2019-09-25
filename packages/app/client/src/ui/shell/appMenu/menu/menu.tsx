@@ -77,9 +77,10 @@ export class Menu extends React.Component<MenuProps, MenuState> {
       <ul
         aria-labelledby={ariaLabelledBy}
         className={styles.menu}
+        id={`menu-of-${ariaLabelledBy}`}
+        onKeyDown={this.onKeyDown}
         role="menu"
         style={this.menuPosition}
-        onKeyDown={this.onKeyDown}
       >
         {items.map((item, index) => {
           if (item.type === 'submenu') {

@@ -35,9 +35,10 @@ import * as React from 'react';
 
 import * as styles from '../appMenu.scss';
 
-type MenuItemType = 'default' | 'toggle' | 'submenu' | 'separator';
+type MenuItemType = 'default' | 'submenu' | 'separator';
 
 export interface MenuItem {
+  checked?: boolean;
   disabled?: boolean;
   items?: MenuItem[];
   label?: string;
@@ -53,39 +54,48 @@ export interface MenuItemProps extends MenuItem {
 /** Just a basic menu item (Checkbox / Separator / Default) */
 export class MenuItemComp extends React.Component<MenuItemProps, {}> {
   public render(): React.ReactNode {
-    const { focusHandler, index, label, onClick, type = 'default' } = this.props;
+    const { checked, disabled, focusHandler, index, label, type = 'default' } = this.props;
 
     switch (type) {
       case 'separator':
         return <li className={styles.menuSeparator}></li>;
 
-      // TODO: define checkbox
-      case 'toggle':
       default:
         return (
           <li
-            className={styles.menuItem}
-            onClick={onClick}
+            className={`${styles.menuItem} ${disabled ? styles.disabled : ''}`}
+            onClick={this.onClick}
             onKeyDown={this.onKeyDown}
             ref={focusHandler(index)}
             role="menuitem"
             tabIndex={-1}
           >
+            {checked && <span className={styles.menuItemCheck} role="presentation" />}
             {label}
           </li>
         );
     }
   }
 
+  private onClick = (event: React.MouseEvent<HTMLLIElement>): void => {
+    const { disabled, onClick } = this.props;
+    if (!disabled && onClick) {
+      onClick();
+    }
+  };
+
   private onKeyDown = (event: React.KeyboardEvent<HTMLLIElement>): void => {
+    const { disabled, onClick } = this.props;
     let { key } = event;
     key = key.toLowerCase();
 
     if (key === 'enter') {
       event.preventDefault();
       event.stopPropagation();
-      this.props.onClick && this.props.onClick();
-      document.body.dispatchEvent(new Event('MenuItemSelected'));
+      if (!disabled) {
+        onClick && onClick();
+        document.body.dispatchEvent(new Event('MenuItemSelected'));
+      }
     }
   };
 }
