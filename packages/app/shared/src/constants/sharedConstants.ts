@@ -76,6 +76,7 @@ export const SharedConstants = {
     },
 
     Electron: {
+      CheckForUpdates: 'shell:check-for-updates',
       FetchRemote: 'shell:fetch-remote',
       ShowMessageBox: 'shell:showExplorer-message-box',
       ShowOpenDialog: 'shell:showExplorer-open-dialog',
@@ -93,6 +94,7 @@ export const SharedConstants = {
       OpenFileLocation: 'shell:open-file-location',
       UnlinkFile: 'shell:unlink-file',
       RenameFile: 'shell:rename-file',
+      QuitAndInstall: 'shell:quit-and-install',
     },
 
     Emulator: {
@@ -113,6 +115,13 @@ export const SharedConstants = {
       StartEmulator: 'emulator:start',
       OpenProtocolUrls: 'emulator:openProtocolUrls',
       ClearState: 'emulator:clear-state',
+      SendConversationUpdateUserAdded: 'emulator:send-activity:user-added',
+      SendConversationUpdateUserRemoved: 'emulator:send-activity:user-removed',
+      SendBotContactAdded: 'emulator:send-activity:bot-contact-added',
+      SendBotContactRemoved: 'emulator:send-activity:bot-contact-removed',
+      SendTyping: 'emulator:send-activity:typing',
+      SendPing: 'emulator:send-activity:ping',
+      SendDeleteUserData: 'emulator:send-activity:delete-user-data',
     },
 
     Extension: {

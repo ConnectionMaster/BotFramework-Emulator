@@ -77,10 +77,11 @@ export class MenuItemComp extends React.Component<MenuItemProps, {}> {
     }
   }
 
-  private onClick = (event: React.MouseEvent<HTMLLIElement>): void => {
+  private onClick = (_event: React.MouseEvent<HTMLLIElement>): void => {
     const { disabled, onClick } = this.props;
     if (!disabled && onClick) {
       onClick();
+      document.body.dispatchEvent(new Event('MenuItemSelected'));
     }
   };
 

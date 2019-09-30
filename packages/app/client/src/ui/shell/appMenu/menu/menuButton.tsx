@@ -153,6 +153,7 @@ export class MenuButton extends React.Component<MenuButtonProps, MenuButtonState
     const { id } = this.props;
     const target = event.target as HTMLElement;
     const idSelector = `ul#menu-of-${id || this.menuButtonId}`;
+    // ignore clicks on the menu button, because those will be handled by onButtonClick()
     if (!target.closest(idSelector) && target.id !== (id || this.menuButtonId)) {
       // the click was outside of the menu
       this.setState({ menuShowing: false });

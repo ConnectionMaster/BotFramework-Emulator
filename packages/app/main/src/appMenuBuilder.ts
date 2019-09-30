@@ -31,11 +31,11 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import { BotInfo, SharedConstants } from '@bfemulator/app-shared';
+import { BotInfo, SharedConstants, UpdateStatus } from '@bfemulator/app-shared';
 import { CommandServiceImpl, CommandServiceInstance, ConversationService } from '@bfemulator/sdk-shared';
 import { app, clipboard, Menu, MenuItem, MenuItemConstructorOptions, shell } from 'electron';
 
-import { AppUpdater, UpdateStatus } from './appUpdater';
+import { AppUpdater } from './appUpdater';
 import { BotHelpers } from './botHelpers';
 import { Emulator } from './emulator';
 import { rememberTheme } from './state/actions/windowStateActions';
@@ -495,7 +495,7 @@ export class AppMenuBuilder {
         // will toggle visibility of auto update menu item states as workaround to non-dynamic labels in Electron
         {
           id: 'auto-update-restart',
-          label: 'Restart to Update...',
+          label: 'Restart to update...',
           click: () => AppUpdater.quitAndInstall(),
           enabled: true,
           visible: AppUpdater.status === UpdateStatus.UpdateReadyToInstall,
@@ -508,7 +508,7 @@ export class AppMenuBuilder {
         },
         {
           id: 'auto-update-check',
-          label: 'Check for Update...',
+          label: 'Check for update...',
           click: () => AppUpdater.checkForUpdates(true),
           enabled: true,
           visible: AppUpdater.status === UpdateStatus.Idle || AppUpdater.status === UpdateStatus.UpdateAvailable,

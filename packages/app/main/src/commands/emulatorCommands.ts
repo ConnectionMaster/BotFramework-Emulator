@@ -35,7 +35,13 @@ import * as path from 'path';
 
 import { newBot, newEndpoint, SharedConstants } from '@bfemulator/app-shared';
 import { Conversation, Users } from '@bfemulator/emulator-core';
-import { BotConfigWithPath, Command, CommandServiceImpl, CommandServiceInstance } from '@bfemulator/sdk-shared';
+import {
+  BotConfigWithPath,
+  Command,
+  CommandServiceImpl,
+  CommandServiceInstance,
+  ConversationService,
+} from '@bfemulator/sdk-shared';
 import * as fs from 'fs-extra';
 import { sync as mkdirpSync } from 'mkdirp';
 import { session } from 'electron';
@@ -303,5 +309,68 @@ export class EmulatorCommands {
     }
 
     return true;
+  }
+
+  @Command(Commands.SendConversationUpdateUserAdded)
+  protected async sendConversationUpdateUserAdded() {
+    ConversationService.addUser(this.serviceUrl, this.conversationId);
+    TelemetryService.trackEvent('sendActivity_addUser');
+  }
+
+  @Command(Commands.SendConversationUpdateUserRemoved)
+  protected async sendConversationUpdateUserRemoved() {
+    // this never worked in the original app menu because it only ever passed 2 of the 3 arguments
+    // ConversationService.removeUser(
+    //   this.serviceUrl,
+    //   this.conversationId,
+    // );
+    TelemetryService.trackEvent('sendActivity_removeUser');
+  }
+
+  @Command(Commands.SendBotContactAdded)
+  protected async sendBotContactAdded() {
+    ConversationService.botContactAdded(this.serviceUrl, this.conversationId);
+    TelemetryService.trackEvent('sendActivity_botContactAdded');
+  }
+
+  @Command(Commands.SendBotContactRemoved)
+  protected async sendBotContactRemoved() {
+    ConversationService.botContactRemoved(this.serviceUrl, this.conversationId);
+    TelemetryService.trackEvent('sendActivity_botContactRemoved');
+  }
+
+  @Command(Commands.SendTyping)
+  protected async sendTyping() {
+    ConversationService.typing(this.serviceUrl, this.conversationId);
+    TelemetryService.trackEvent('sendActivity_typing');
+  }
+
+  @Command(Commands.SendPing)
+  protected async sendPing() {
+    ConversationService.ping(this.serviceUrl, this.conversationId);
+    TelemetryService.trackEvent('sendActivity_ping');
+  }
+
+  @Command(Commands.SendDeleteUserData)
+  protected async sendDeleteUserData() {
+    ConversationService.deleteUserData(this.serviceUrl, this.conversationId);
+    TelemetryService.trackEvent('sendActivity_deleteUserData');
+  }
+
+  // TODO: make this a utility function / helper ??
+  private get conversationId() {
+    const state = store.getState();
+    if (!state.editor) {
+      return '';
+    }
+    const { editors, activeEditor } = state.editor;
+    const { activeDocumentId } = editors[activeEditor];
+
+    return state.chat.chats[activeDocumentId].conversationId;
+  }
+
+  // TODO: make this a utility function / helper ??
+  private get serviceUrl() {
+    return Emulator.getInstance().framework.serverUrl.replace('[::]', 'localhost');
   }
 }

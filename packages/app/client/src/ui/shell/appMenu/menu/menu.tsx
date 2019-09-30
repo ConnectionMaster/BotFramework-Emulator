@@ -86,6 +86,7 @@ export class Menu extends React.Component<MenuProps, MenuState> {
           if (item.type === 'submenu') {
             return (
               <SubMenu
+                disabled={item.disabled}
                 focusHandler={this.checkRefForFocus}
                 index={index}
                 items={item.items}

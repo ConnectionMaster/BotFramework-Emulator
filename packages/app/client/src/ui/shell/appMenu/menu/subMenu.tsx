@@ -39,6 +39,7 @@ import { Menu } from './menu';
 import { MenuItem } from './menuItem';
 
 export interface SubMenuProps {
+  disabled?: boolean;
   focusHandler: (index: number) => (ref: HTMLLIElement) => void;
   index: number;
   items: MenuItem[];
@@ -70,7 +71,7 @@ export class SubMenu extends React.Component<SubMenuProps, SubMenuState> {
   }
 
   public render(): React.ReactNode {
-    const { focusHandler, index, items, label = '' } = this.props;
+    const { disabled, focusHandler, index, items, label = '' } = this.props;
     const { menuShowing } = this.state;
     // if the submenu is showing, temporarily disable focus management in parent menu
     const ref = menuShowing ? undefined : focusHandler(index);
@@ -79,7 +80,7 @@ export class SubMenu extends React.Component<SubMenuProps, SubMenuState> {
       <li
         aria-haspopup={true}
         aria-expanded={menuShowing}
-        className={styles.menuItem}
+        className={`${styles.menuItem} ${disabled ? styles.disabled : ''}`}
         id={this.subMenuButtonId}
         onKeyDown={this.onKeyDown}
         onMouseEnter={this.onMouseEnter}
@@ -110,7 +111,9 @@ export class SubMenu extends React.Component<SubMenuProps, SubMenuState> {
         // TODO: Would be nice to avoid using stopPropagation()
         event.stopPropagation();
         event.preventDefault();
-        this.setMenuShowing(true);
+        if (!this.props.disabled) {
+          this.setMenuShowing(true);
+        }
         break;
 
       case 'arrowleft':
@@ -127,7 +130,9 @@ export class SubMenu extends React.Component<SubMenuProps, SubMenuState> {
   };
 
   private onMouseEnter = (): void => {
-    this.setMenuShowing(true);
+    if (!this.props.disabled) {
+      this.setMenuShowing(true);
+    }
   };
 
   private onMouseLeave = (): void => {

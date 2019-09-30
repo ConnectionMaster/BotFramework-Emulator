@@ -31,32 +31,24 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-export const SET_AVAILABLE_THEMES = 'setAvailableThemes';
-export const SWITCH_THEME = 'switchTheme';
-export declare type ThemeType = 'setAvailableThemes' | 'switchTheme';
+import { UpdateStatus } from '@bfemulator/app-shared';
 
-export interface ThemeAction<T> {
-  type: ThemeType;
-  payload: T;
+import { UpdateAction, UpdateActionPayload, SET_UPDATE_STATUS } from '../actions/updateActions';
+
+const DEFAULT_STATE: UpdateState = {
+  status: UpdateStatus.Idle,
+};
+
+export interface UpdateState {
+  status: UpdateStatus;
 }
 
-export interface SwitchThemePayload {
-  themeName: string;
-  themeComponents: string[];
-}
+export function update(state: UpdateState = DEFAULT_STATE, action: UpdateAction<UpdateActionPayload>): UpdateState {
+  switch (action.type) {
+    case SET_UPDATE_STATUS:
+      return { ...state, status: action.payload };
 
-export function setAvailableThemes(
-  themes: { name: string; href: string }[]
-): ThemeAction<{ name: string; href: string }[]> {
-  return {
-    type: SET_AVAILABLE_THEMES,
-    payload: themes,
-  };
-}
-
-export function switchTheme(themeName: string, themeComponents: string[]): ThemeAction<SwitchThemePayload> {
-  return {
-    type: SWITCH_THEME,
-    payload: { themeName, themeComponents },
-  };
+    default:
+      return state;
+  }
 }

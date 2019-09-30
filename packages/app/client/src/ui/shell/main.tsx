@@ -47,7 +47,7 @@ import * as styles from './main.scss';
 import { MDI } from './mdi';
 import { NavBar } from './navBar';
 import { StatusBar } from './statusBar/statusBar';
-import { AppMenu } from './appMenu/appMenu';
+import { AppMenuContainer } from './appMenu/appMenuContainer';
 
 export interface MainProps {
   applicationMountComplete?: () => void;
@@ -121,7 +121,7 @@ export class Main extends React.Component<MainProps, MainState> {
 
     return (
       <>
-        <AppMenu />
+        <AppMenuContainer />
         <div className={styles.main}>
           <div className={styles.nav}>
             {!this.props.presentationModeEnabled && (
