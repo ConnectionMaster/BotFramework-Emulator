@@ -31,9 +31,8 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-export const SET_AVAILABLE_THEMES = 'setAvailableThemes';
 export const SWITCH_THEME = 'switchTheme';
-export declare type ThemeType = 'setAvailableThemes' | 'switchTheme';
+export declare type ThemeType = 'switchTheme';
 
 export interface ThemeAction<T> {
   type: ThemeType;
@@ -43,15 +42,6 @@ export interface ThemeAction<T> {
 export interface SwitchThemePayload {
   themeName: string;
   themeComponents: string[];
-}
-
-export function setAvailableThemes(
-  themes: { name: string; href: string }[]
-): ThemeAction<{ name: string; href: string }[]> {
-  return {
-    type: SET_AVAILABLE_THEMES,
-    payload: themes,
-  };
 }
 
 export function switchTheme(themeName: string, themeComponents: string[]): ThemeAction<SwitchThemePayload> {

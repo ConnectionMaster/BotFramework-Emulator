@@ -34,7 +34,7 @@
 import { connect } from 'react-redux';
 import { SharedConstants } from '@bfemulator/app-shared';
 
-import { RootState } from '../../../state';
+import { RootState, rememberTheme } from '../../../state';
 import { executeCommand } from '../../../state/actions/commandActions';
 
 import { AppMenu, AppMenuProps } from './appMenu';
@@ -47,8 +47,8 @@ function mapStateToProps(state: RootState): AppMenuProps {
   return {
     activeDocumentType: activeDocument.contentType,
     appUpdateStatus: state.update.status,
-    availableThemes: state.theme.availableThemes,
-    currentTheme: state.theme.themeName,
+    availableThemes: state.settings.windowState.availableThemes, //state.theme.availableThemes,
+    currentTheme: state.settings.windowState.theme, // state.theme.themeName,
     recentBots: state.bot.botFiles,
   };
 }
@@ -61,8 +61,8 @@ function mapDispatchToProps(dispatch): AppMenuProps {
     openBot: (path: string) => {
       dispatch(executeCommand(false, SharedConstants.Commands.Bot.Switch, null, path));
     },
-    switchTheme: (themeName: string, themeHref: string) => {
-      dispatch(executeCommand(false, SharedConstants.Commands.UI.SwitchTheme, null, themeName, themeHref));
+    switchTheme: (themeName: string) => {
+      dispatch(rememberTheme(themeName));
     },
     quitAndInstall: () => {
       dispatch(executeCommand(true, SharedConstants.Commands.Electron.QuitAndInstall, null));

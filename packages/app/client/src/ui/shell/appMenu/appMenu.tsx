@@ -47,7 +47,7 @@ export interface AppMenuProps {
   currentTheme?: string;
   openBot?: (path: string) => void;
   recentBots?: BotInfo[];
-  switchTheme?: (themeName, themeHref) => void;
+  switchTheme?: (themeName: string) => void;
   quitAndInstall?: () => void;
 }
 
@@ -105,8 +105,7 @@ export class AppMenu extends React.Component<AppMenuProps, {}> {
         label: theme.name,
         checked: theme.name === currentTheme,
         onClick: () => {
-          // TODO: also trigger remember theme on main side somehow
-          this.props.switchTheme(theme.name, theme.href);
+          this.props.switchTheme(theme.name);
         },
       };
       themes.push(themeMenuItem);
